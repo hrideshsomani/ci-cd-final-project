@@ -1,0 +1,85 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: cd-pipeline
+spec:
+  workspaces:
+    - name: pipeline-workspace
+  params:
+    - name: git-url
+      type: string
+      description: The git repository URL to clone
+    - name: git-revision
+      type: string
+      default: "main"
+      description: The git branch or revision to clone
+    - name: image-name
+      type: string
+      description: The target image name
+  tasks:
+    - name: cleanup
+      taskRef:
+        name: cleanup
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace
+
+    - name: git-clone
+      taskRef:
+        name: git-clone
+      runAfter:
+        - cleanup
+      params:
+        - name: url
+          value: $(params.git-url)
+        - name: revision
+          value: $(params.git-revision)
+      workspaces:
+        - name: output
+          workspace: pipeline-workspace
+
+    - name: flake8
+      taskRef:
+        name: flake8
+      runAfter:
+        - git-clone
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace
+
+    - name: nose
+      taskRef:
+        name: nose
+      runAfter:
+        - flake8
+      params:
+        - name: args
+          value: "-v --with-spec --spec-color"
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace
+
+    - name: buildah
+      taskRef:
+        name: buildah
+      runAfter:
+        - nose
+      params:
+        - name: IMAGE
+          value: $(params.image-name)
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace
+
+    - name: deploy
+      taskRef:
+        name: openshift-client
+      runAfter:
+        - buildah
+      params:
+        - name: SCRIPT
+          value: |
+            oc apply -f deploy/
+      workspaces:
+        - name: manifest-dir
+          workspace: pipeline-workspace

@@ -1,0 +1,71 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: cleanup
+spec:
+  description: This task will clean up a workspace by deleting all the files
+  workspaces:
+    - name: source
+  steps:
+    - name: clean
+      image: alpine:3
+      workingDir: $(workspaces.source.path)
+      securityContext:
+        runAsNonRoot: false
+        runAsUser: 0
+      script: |
+        set -eu
+        echo "Removing all files from $(workspaces.source.path) ..."
+        if [ -d "$(workspaces.source.path)" ] ; then
+          find "$(workspaces.source.path)" -mindepth 1 -maxdepth 1 -print0 | xargs -r -0 rm -rf
+        fi
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: flake8
+spec:
+  description: This task will run flake8 on the provided input
+  workspaces:
+    - name: source
+  params:
+    - name: image
+      description: The container image with flake8
+      default: "python:3.9-slim"
+    - name: args
+      description: The arguments to pass to flake8
+      type: string
+      default: "service --count --max-complexity=10 --max-line-length=127 --statistics"
+  steps:
+    - name: flake8
+      image: $(params.image)
+      workingDir: $(workspaces.source.path)
+      script: |
+        set -e
+        python -m pip install --upgrade pip
+        pip install flake8
+        flake8 $(params.args)
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: nose
+spec:
+  description: This task will run unit tests using nosetests
+  workspaces:
+    - name: source
+  params:
+    - name: args
+      description: Arguments to pass to nose
+      type: string
+      default: "-v"
+  steps:
+    - name: nosetests
+      image: python:3.9-slim
+      workingDir: $(workspaces.source.path)
+      script: |
+        set -e
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        nosetests $(params.args)

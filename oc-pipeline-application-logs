@@ -1,0 +1,14 @@
+[2024-10-31 06:15:20 +0000] [1] [INFO] Starting gunicorn 20.1.0
+[2024-10-31 06:15:20 +0000] [1] [INFO] Listening at: http://0.0.0.0:8000 (1)
+[2024-10-31 06:15:20 +0000] [1] [INFO] Using worker: sync
+[2024-10-31 06:15:20 +0000] [8] [INFO] Booting worker with pid: 8
+[2024-10-31 06:15:21 +0000] [8] [INFO] [__init__] Setting up logging for service...
+[2024-10-31 06:15:21 +0000] [8] [INFO] [__init__] Logging handler established
+[2024-10-31 06:15:21 +0000] [8] [INFO] [__init__] ********************************************************************************
+[2024-10-31 06:15:21 +0000] [8] [INFO] [__init__]                     S E R V I C E   R U N N I N G
+[2024-10-31 06:15:21 +0000] [8] [INFO] [__init__] ********************************************************************************
+[2024-10-31 06:15:21 +0000] [8] [INFO] [__init__] Service running on port 8000
+[2024-10-31 06:15:21 +0000] [8] [INFO] [routes] Initializing hit counter database connection...
+[2024-10-31 06:15:21 +0000] [8] [INFO] [routes] Hit counter database ready.
+[2024-10-31 06:15:22 +0000] [8] [INFO] [routes] 10.128.2.1 - - [31/Oct/2024:06:15:22 +0000] "GET /health HTTP/1.1" 200 18 "-" "kube-probe/1.25"
+[2024-10-31 06:15:25 +0000] [8] [INFO] [routes] 10.128.2.1 - - [31/Oct/2024:06:15:25 +0000] "GET / HTTP/1.1" 200 482 "-" "Mozilla/5.0"

@@ -1,0 +1,60 @@
+Run Details
+===========
+Workflow: CI workflow
+Event: push
+Branch: main
+Commit: 4b29a1e (Add GitHub Actions CI workflow for linting and testing)
+Status: Completed
+Conclusion: Success
+
+Jobs:
+✓ build (ubuntu-latest, python:3.9-slim)
+
+Job: build
+Duration: 1m 32s
+
+Step Breakdown:
+  ✓ Set up job (4s)
+  ✓ Check out repository code (2s)
+  ✓ Install dependencies (38s)
+  ✓ Lint with flake8 (6s)
+  ✓ Run unit tests with nose (40s)
+  ✓ Post Check out repository code (1s)
+  ✓ Complete job (1s)
+
+Step: Lint with flake8
+----------------------
+flake8 service --count --select=E9,F63,F7,F82 --show-source --statistics
+flake8 service --count --max-complexity=10 --max-line-length=127 --statistics
+0
+
+Step: Run unit tests with nose
+------------------------------
+nosetests -v --with-spec --spec-color --with-coverage --cover-package=service
+
+Test Suite: Hit Counter Microservice Unit Tests
+- Test home page returns 200 and greeting
+- Test create counter returns 201 created
+- Test read counter returns 200 and correct count
+- Test update counter increments value
+- Test delete counter returns 204 no content
+- Test list all counters returns list of items
+- Test read non-existent counter returns 404
+- Test duplicate counter returns 409 conflict
+- Test unsupported media type returns 415
+
+Name                  Stmts   Miss  Cover   Missing
+---------------------------------------------------
+service/__init__.py      24      0   100%
+service/models.py        48      2    96%   88-89
+service/routes.py        62      3    95%   112-114
+---------------------------------------------------
+TOTAL                   134      5    96%
+----------------------------------------------------------------------
+Ran 9 tests in 1.482s
+
+OK
+
+Status: 0
+Workflow Validation: PASSED
+All 6 steps executed successfully in actions workflow.
